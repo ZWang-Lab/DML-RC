@@ -1,5 +1,5 @@
 # DML_RC
-Double/debiased Machine Learning with Regression Calibration (DML_RC) is a machine learning approach to estimate the causal effects of correlated multi-pollutant and correct for bias due to measurement error. 
+Double/debiased Machine Learning with Regression Calibration (DML-RC) is a machine learning approach to estimate the causal effects of correlated multi-pollutant and correct for bias due to measurement error. 
 
 ## Installation Instructions:
 
