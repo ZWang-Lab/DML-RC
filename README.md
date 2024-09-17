@@ -11,7 +11,7 @@ Double/debiased Machine Learning with Regression Calibration (DML-RC) is a machi
     
 3. Python code:   minimax_tilting_sampler.py (directly download from https://github.com/brunzema/truncated-mvn-sampler)
 
-Please install the required packages and codes before you use DML_RC code.
+Please install the required packages and codes before you use DML-RC code.
 
 ## Usage instructions
 
