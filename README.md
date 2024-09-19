@@ -21,3 +21,4 @@ Directly download generate_data.py and reg_dml.py, then run the following code i
 import generate_data
 import reg_dml
 ```
+Example code (example.ipynb) was provided to simulate dataset and estimate causal effect with DML-RC.
