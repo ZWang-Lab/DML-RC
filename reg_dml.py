@@ -40,7 +40,7 @@ def var_est_dml(dml_model):
     model_g_predict=((dml_model.predictions)["ml_g"]).reshape(-1,1)
     model_m_predict=((dml_model.predictions)["ml_m"]).reshape(-1,1)
 
-    if dml_model.apply_cross_fitting:
+    if dml_model.draw_sample_splitting:
         _var_scaling_factor = dml_model._dml_data.n_obs
         y_test=np.array(y)
         d_test=np.array(d)
@@ -74,7 +74,7 @@ def var_est_gee(dml_model,using_lasso,w1_x_pred_per_add_cons, xw_nm_m,covmatrix_
     model_g_predict=((dml_model.predictions)["ml_g"]).reshape(-1,1)
     model_m_predict=((dml_model.predictions)["ml_m"]).reshape(-1,1)
 
-    if dml_model.apply_cross_fitting:
+    if dml_model.draw_sample_splitting:
         _var_scaling_factor = dml_model._dml_data.n_obs
         y_test=np.array(y)
         d_test=np.array(d)
@@ -124,7 +124,7 @@ def var_est_gee(dml_model,using_lasso,w1_x_pred_per_add_cons, xw_nm_m,covmatrix_
                 m_pred=((dml_model_copy.predictions)["ml_m"]).reshape(-1)
                 d_new=dml_model_copy._dml_data.d
                 dml_model_new_psi = dml_model_copy.psi
-                if dml_model.apply_cross_fitting:
+                if dml_model.draw_sample_splitting:
                     d_new_test=np.array(d_new)
                 else:
                     d_new_test=np.array(d_new)[test_index]
@@ -222,16 +222,7 @@ def dml(data,ml_l,ml_m,ml_g,true_para, ME,using_lasso, w1_x_pred_per_add_cons, x
     (x, y, d) = data
 
     obj_dml_data = DoubleMLData.from_arrays(x, y, d)
-    obj_dml_plr_nonorth_nosplit = DoubleMLPLR(obj_dml_data,
-                                      ml_l, ml_m, ml_g,
-                                      n_folds=1,
-                                      apply_cross_fitting=False,
-                                      score=non_orth_score)
-    obj_dml_plr_nonorth_nosplit.fit(store_predictions=True,store_models=True)
-    this_theta_nonorth_nosplit = obj_dml_plr_nonorth_nosplit.coef[0]
-    se_nonorth_nosplit=obj_dml_plr_nonorth_nosplit.se[0]
-    se_nonorth_nosplit_v2=var_est_dml(obj_dml_plr_nonorth_nosplit)
-    
+
 
 
     obj_dml_plr = DoubleMLPLR(obj_dml_data,
@@ -244,11 +235,10 @@ def dml(data,ml_l,ml_m,ml_g,true_para, ME,using_lasso, w1_x_pred_per_add_cons, x
     se_orth_v2=var_est_dml(obj_dml_plr)
 
     if ME:
-        se_nonorth_nosplit1,se_nonorth_nosplit2=var_est_gee(obj_dml_plr_nonorth_nosplit,using_lasso,w1_x_pred_per_add_cons, xw_nm_m,gee_var,gee_params)
         se_orth1,se_orth2=var_est_gee(obj_dml_plr,using_lasso,w1_x_pred_per_add_cons, xw_nm_m,gee_var,gee_params)
-        results=[this_theta_nonorth_nosplit-true_para,this_theta_dml_plr-true_para,se_nonorth_nosplit1,se_orth1,se_nonorth_nosplit2,se_orth2]
+        results=[this_theta_dml_plr-true_para,se_orth2]
     else:
-        results=[this_theta_nonorth_nosplit-true_para,this_theta_dml_plr-true_para,se_nonorth_nosplit,se_orth,se_nonorth_nosplit_v2,se_orth_v2]
+        results=[this_theta_dml_plr-true_para,se_orth_v2]
     return results
 
 
@@ -258,20 +248,10 @@ def dml_lasso(data,true_para, ME,using_lasso, w1_x_pred_per_add_cons, xw_nm_m,ge
     ml_g = linear_model.Lasso(max_iter=100000, warm_start=True)
     (x, y, d) = data
     obj_dml_data = DoubleMLData.from_arrays(x, y, d)
-    obj_dml_plr_nonorth_nosplit = DoubleMLPLR(obj_dml_data,
-                                      ml_l, ml_m, ml_g,
-                                      n_folds=1,
-                                      apply_cross_fitting=False,
-                                      score=non_orth_score)
+
     par_grids = {'ml_l': {'alpha': np.arange(0.001, 0.1, 0.005)},
                  'ml_m': {'alpha': np.arange(0.001, 0.1, 0.005)},
                  'ml_g': {'alpha': np.arange(0.001, 0.1, 0.005)}}
-    obj_dml_plr_nonorth_nosplit.tune(par_grids, search_mode='grid_search');
-    print("ML_full_sample",obj_dml_plr_nonorth_nosplit.params)
-    obj_dml_plr_nonorth_nosplit.fit(store_predictions=True,store_models=True)
-    this_theta_nonorth_nosplit = obj_dml_plr_nonorth_nosplit.coef[0]
-    se_nonorth_nosplit=obj_dml_plr_nonorth_nosplit.se[0]
-    se_nonorth_nosplit_v2=var_est_dml(obj_dml_plr_nonorth_nosplit)
     obj_dml_data = DoubleMLData.from_arrays(x, y, d)
     obj_dml_plr = DoubleMLPLR(obj_dml_data,
                               ml_l, ml_m, ml_g,
@@ -284,11 +264,10 @@ def dml_lasso(data,true_para, ME,using_lasso, w1_x_pred_per_add_cons, xw_nm_m,ge
     se_orth=obj_dml_plr.se[0]
     se_orth_v2=var_est_dml(obj_dml_plr)
     if ME:
-        se_nonorth_nosplit1,se_nonorth_nosplit2=var_est_gee(obj_dml_plr_nonorth_nosplit,using_lasso,w1_x_pred_per_add_cons, xw_nm_m,gee_var,gee_params)
         se_orth1,se_orth2=var_est_gee(obj_dml_plr,using_lasso,w1_x_pred_per_add_cons, xw_nm_m,gee_var,gee_params)
-        results=[this_theta_nonorth_nosplit-true_para,this_theta_dml_plr-true_para,se_nonorth_nosplit1,se_orth1,se_nonorth_nosplit2,se_orth2]
+        results=[this_theta_dml_plr-true_para,se_orth2]
     else:
-        results=[this_theta_nonorth_nosplit-true_para,this_theta_dml_plr-true_para,se_nonorth_nosplit,se_orth,se_nonorth_nosplit_v2,se_orth_v2]
+        results=[this_theta_dml_plr-true_para,se_orth_v2]
     return results
 
 
