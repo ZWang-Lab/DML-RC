@@ -19,8 +19,14 @@ import statsmodels.api as sm
 from scipy import stats
 import copy
 
-############ main study
+#Generate exposure variable and covariate
 def ge_right(n,age_min,age_max,mean_x,sigma_x,sigma_ep):
+#n: interger, sample size
+#age_min: interger, the minimum value of the covariate age 
+#age_max: interger, the maximum value of the covariate age 
+#mean_x: vector, mean value of personal measurements
+#sigma_x: matrix, covariance matrix of  of personal measurements
+#sigma_ep: matrix, covariance matrix of  of measurements error
 
     ## personal measures
     mean_x=np.array(mean_x)
@@ -60,9 +66,21 @@ def ge_right(n,age_min,age_max,mean_x,sigma_x,sigma_ep):
     data3=np.concatenate([x1,x_nm,age.reshape(-1,1),race.reshape(-1,1)],axis=1)
     return data3
 
+#generate exposure variable, covariate, and the outcome
 def ge_main(n,age_min,age_max,mean_x,b_0,b_x,b_w,sd_xi,sigma_x,sigma_ep,linearg=True):
+#n: interger, sample size
+#age_min: interger, the minimum value of the covariate age 
+#age_max: interger, the maximum value of the covariate age 
+#mean_x: vector, mean value of personal measurements
+#b_0: real number, intercept in the main model
+#b_x: real number, exposure coefficient of interest in the main model
+#b_w: vector,  covariate coefficient in the main model
+#sd_xi: positive number, standard deviation of error term in the main model
+#sigma_x: matrix, covariance matrix of  of personal measurements
+#sigma_ep: matrix, covariance matrix of  of measurements error
+#linearg: Boolean value, indicate the main model is linear (True) or not (False)
 
-    ## race age error in main model
+    ##  error in main model
     ep_xixi=np.random.normal(0,sd_xi,n)
     ## personal, nearest monitor
     data2=ge_right(n,age_min,age_max,mean_x,sigma_x,sigma_ep)
