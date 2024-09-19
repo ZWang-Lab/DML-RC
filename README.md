@@ -7,7 +7,7 @@ Double/debiased Machine Learning with Regression Calibration (DML-RC) is a machi
     
 1. Python 3.8 or higher
     
-2. Package:    numpy, pandas, math, pickle, time, statsmodels, scipy, copy, doubleml, sklearn, multiprocessing, statsmodels
+2. Package:    numpy, pandas, math, pickle, time, statsmodels, scipy, copy, doubleml, sklearn, multiprocessing
     
 3. Python code:   minimax_tilting_sampler.py (directly download from https://github.com/brunzema/truncated-mvn-sampler)
 
