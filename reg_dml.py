@@ -1,3 +1,9 @@
+#################################################################
+# Code written by Gang Xu (g.xu@yale.edu)
+# For bug issues, please contact author using the email address
+#################################################################
+
+
 import numpy as np
 import pandas as pd
 from math import sqrt
